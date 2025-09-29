@@ -151,118 +151,117 @@
   <div id="archivedSessions" class="mt-6 hidden space-y-6"></div>
 </section>
 
- <script src="js/scripts.js"></script>
-
 <script>
-  let sessions = [];
-  let currentIndex = 0;
-  const tabContent = document.getElementById('tabContent');
-  const archivedContainer = document.getElementById('archivedSessions');
-  const toggleArchiveBtn = document.getElementById('toggle-archive');
-  const sessionCounter = document.getElementById('sessionCounter');
+let sessions = [];
+let currentIndex = 0;
+const tabContent = document.getElementById('tabContent');
+const archivedContainer = document.getElementById('archivedSessions');
+const toggleArchiveBtn = document.getElementById('toggle-archive');
+const sessionCounter = document.getElementById('sessionCounter');
 
-  // Load sessions.json
-  async function loadSessions() {
-    const res = await fetch('/sessions.json');
-    sessions = await res.json();
-    renderSession(currentIndex);
-    renderArchived();
-  }
+// Load sessions.json
+async function loadSessions() {
+  const res = await fetch('/sessions.json');
+  sessions = await res.json();
+  renderSession(currentIndex);
+  renderArchived();
+}
 
-  function renderSession(index) {
-    const session = sessions[index];
-    if (!session) return;
-    tabContent.innerHTML = `
-      <div class="flex flex-col md:flex-row gap-6 p-6 bg-gray-800 border-2 border-amber-500 rounded-lg shadow-lg overflow-hidden">
-        <div class="w-full md:w-1/3 rounded-lg overflow-hidden shadow-lg">
-          <img src="${session.img}" alt="${session.title}" class="w-full h-96 object-cover" />
+// Responsive single image
+function responsiveImage(url, alt) {
+  return `
+    <div class="w-full md:w-1/3 rounded-lg overflow-hidden shadow-lg" style="aspect-ratio:1/1;">
+      <img src="${url}" alt="${alt}" class="w-full h-full object-cover" />
+    </div>
+  `;
+}
+
+function renderSession(index) {
+  const session = sessions[index];
+  if (!session) return;
+
+  tabContent.innerHTML = `
+    <div class="flex flex-col md:flex-row gap-6 p-6 bg-gray-800 border-2 border-amber-500 rounded-lg shadow-lg overflow-hidden">
+      ${responsiveImage(session.img, session.title)}
+      <div class="flex flex-col justify-between flex-1">
+        <div>
+          <h3 class="text-2xl font-bold mb-3 text-amber-400 select-text">
+            Session ${session.id}: ${session.title} ${session.status ? `<span class="text-gray-400 text-base">(${session.status})</span>` : ''}
+          </h3>
+          <p class="text-gray-300 mb-4 select-text">${session.description}</p>
+          <ul class="space-y-1 text-gray-400 text-sm select-text">
+            <li><strong>Date:</strong> ${session.date}</li>
+            <li><strong>Time:</strong> ${session.time}</li>
+            <li><strong>Platform:</strong> ${session.platform}</li>
+          </ul>
         </div>
-        <div class="w-full md:w-1/3 rounded-lg overflow-hidden shadow-lg">
-          <img src="${session.flyer}" alt="${session.title} Flyer" class="w-full h-96 object-cover" />
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="${session.youtube}" target="_blank" class="bg-red-600 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-red-500 transition select-none">
+            Watch on YouTube
+          </a>
+          <a href="${session.linkedin}" target="_blank" class="bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition select-none">
+            View on LinkedIn
+          </a>
         </div>
-        <div class="flex flex-col justify-between flex-1">
-          <div>
-            <h3 class="text-2xl font-bold mb-3 text-amber-400 select-text">
-              Session ${session.id}: ${session.title} ${session.status ? `<span class="text-gray-400 text-base">(${session.status})</span>` : ''}
-            </h3>
-            <p class="text-gray-300 mb-4 select-text">${session.description}</p>
-            <ul class="space-y-1 text-gray-400 text-sm select-text">
-              <li><strong>Date:</strong> ${session.date}</li>
-              <li><strong>Time:</strong> ${session.time}</li>
-              <li><strong>Platform:</strong> ${session.platform}</li>
-            </ul>
-          </div>
-          <div class="mt-6 flex flex-wrap gap-3">
-            <a href="${session.youtube}" target="_blank" class="bg-red-600 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-red-500 transition select-none">
-              Watch on YouTube
-            </a>
-            <a href="${session.linkedin}" target="_blank" class="bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition select-none">
-              View on LinkedIn
-            </a>
-          </div>
+      </div>
+    </div>
+  `;
+  sessionCounter.textContent = `Session ${index + 1} of ${sessions.length}`;
+}
+
+function prevSession() {
+  currentIndex = (currentIndex - 1 + sessions.length) % sessions.length;
+  renderSession(currentIndex);
+}
+
+function nextSession() {
+  currentIndex = (currentIndex + 1) % sessions.length;
+  renderSession(currentIndex);
+}
+
+function renderArchived() {
+  archivedContainer.innerHTML = '';
+  sessions.filter(s => s.closed).forEach(session => {
+    const div = document.createElement('div');
+    div.className = "flex flex-col md:flex-row gap-6 p-6 bg-gray-800 border-2 border-amber-500 rounded-lg shadow-lg overflow-hidden";
+    div.innerHTML = `
+      ${responsiveImage(session.img, session.title)}
+      <div class="flex flex-col justify-between flex-1">
+        <div>
+          <h3 class="text-2xl font-bold mb-3 text-amber-400 select-text">
+            Session ${session.id}: ${session.title} (${session.status || 'Archived'})
+          </h3>
+          <p class="text-gray-300 mb-4 select-text">${session.description}</p>
+          <ul class="space-y-1 text-gray-400 text-sm select-text">
+            <li><strong>Date:</strong> ${session.date}</li>
+            <li><strong>Time:</strong> ${session.time}</li>
+            <li><strong>Platform:</strong> ${session.platform}</li>
+          </ul>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="${session.youtube}" target="_blank" class="bg-red-600 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-red-500 transition select-none">
+            Watch on YouTube
+          </a>
+          <a href="${session.linkedin}" target="_blank" class="bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition select-none">
+            View on LinkedIn
+          </a>
         </div>
       </div>
     `;
-    sessionCounter.textContent = `Session ${index + 1} of ${sessions.length}`;
-  }
-
-  function prevSession() {
-    currentIndex = (currentIndex - 1 + sessions.length) % sessions.length;
-    renderSession(currentIndex);
-  }
-
-  function nextSession() {
-    currentIndex = (currentIndex + 1) % sessions.length;
-    renderSession(currentIndex);
-  }
-
-  function renderArchived() {
-    archivedContainer.innerHTML = '';
-    sessions.filter(s => s.closed).forEach(session => {
-      const div = document.createElement('div');
-      div.className = "flex flex-col md:flex-row gap-6 p-6 bg-gray-800 border-2 border-amber-500 rounded-lg shadow-lg overflow-hidden";
-      div.innerHTML = `
-        <div class="w-full md:w-1/3 rounded-lg overflow-hidden shadow-lg">
-          <img src="${session.img}" alt="${session.title}" class="w-full h-96 object-cover" />
-        </div>
-        <div class="w-full md:w-1/3 rounded-lg overflow-hidden shadow-lg">
-          <img src="${session.flyer}" alt="${session.title} Flyer" class="w-full h-96 object-cover" />
-        </div>
-        <div class="flex flex-col justify-between flex-1">
-          <div>
-            <h3 class="text-2xl font-bold mb-3 text-amber-400 select-text">
-              Session ${session.id}: ${session.title} (${session.status || 'Archived'})
-            </h3>
-            <p class="text-gray-300 mb-4 select-text">${session.description}</p>
-            <ul class="space-y-1 text-gray-400 text-sm select-text">
-              <li><strong>Date:</strong> ${session.date}</li>
-              <li><strong>Time:</strong> ${session.time}</li>
-              <li><strong>Platform:</strong> ${session.platform}</li>
-            </ul>
-          </div>
-          <div class="mt-6 flex flex-wrap gap-3">
-            <a href="${session.youtube}" target="_blank" class="bg-red-600 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-red-500 transition select-none">
-              Watch on YouTube
-            </a>
-            <a href="${session.linkedin}" target="_blank" class="bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition select-none">
-              View on LinkedIn
-            </a>
-          </div>
-        </div>
-      `;
-      archivedContainer.appendChild(div);
-    });
-  }
-
-  document.getElementById('prevBtn').addEventListener('click', prevSession);
-  document.getElementById('nextBtn').addEventListener('click', nextSession);
-  toggleArchiveBtn.addEventListener('click', () => {
-    archivedContainer.classList.toggle('hidden');
-    toggleArchiveBtn.textContent = archivedContainer.classList.contains('hidden') ? "View Older Programs" : "Hide Older Programs";
+    archivedContainer.appendChild(div);
   });
+}
 
-  loadSessions();
+document.getElementById('prevBtn').addEventListener('click', prevSession);
+document.getElementById('nextBtn').addEventListener('click', nextSession);
+toggleArchiveBtn.addEventListener('click', () => {
+  archivedContainer.classList.toggle('hidden');
+  toggleArchiveBtn.textContent = archivedContainer.classList.contains('hidden') ? "View Older Programs" : "Hide Older Programs";
+});
+
+loadSessions();
 </script>
+
 
 <!-- Resources -->
 <section id="resources" class="bg-gray-900 py-20 px-6 md:px-16">
@@ -270,70 +269,87 @@
     <h2 class="text-3xl font-bold text-white">Resources & Articles</h2>
     <p class="mt-3 text-gray-300">Latest guides, notes, and research insights.</p>
   </div>
-  <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
 
-    <!-- Resource Cards -->
-    <div class="group relative block bg-gray-800 p-6 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+
+    <!-- Resource Card 1: Business Visibility -->
+    <div class="block bg-gray-800 p-6 rounded-lg shadow transition cursor-pointer">
       <h4 class="text-lg font-semibold mb-2 text-amber-400">Why Visibility is Key for Small Businesses</h4>
       <p class="text-gray-300 mb-3">See threats early, stay secure, and earn customer trust—visibility is the lifeline for small businesses.</p>
-      <span class="text-amber-500 hover:underline">Read →</span>
-      <div class="absolute left-0 mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 p-4 space-y-2" id="dropdown-1"></div>
+      <button class="toggle-btn text-amber-500 font-semibold mb-2">View Resources →</button>
+      <div class="resource-links hidden space-y-2">
+        <!-- Global -->
+        <a href="https://www.entrepreneur.com/article/426830" target="_blank" class="block text-amber-500 hover:underline">Entrepreneur – Importance of Business Visibility</a>
+        <a href="https://afrodigital.org/global-business-visibility-guide/" target="_blank" class="block text-amber-500 hover:underline">AfroDigital – Global Business Visibility Guide</a>
+        <a href="https://www.forbes.com/councils/forbesbusinesscouncil/2025/08/28/why-visibility-is-the-cornerstone-of-global-business-success/" target="_blank" class="block text-amber-500 hover:underline">Forbes – Visibility as Business Success Cornerstone</a>
+        <a href="https://localiq.com/blog/small-business-marketing-trends-report/" target="_blank" class="block text-amber-500 hover:underline">LocaliQ – Small Business Marketing Trends Report</a>
+        <a href="https://www.corporatevision-news.com/8-trends-transforming-business-visibility-in-2025/" target="_blank" class="block text-amber-500 hover:underline">Corporate Vision – 8 Trends Transforming Business Visibility in 2025</a>
+        <!-- Nigerian -->
+        <a href="https://purpledigitals.com/10-ways-to-increase-your-small-business-visibility-in-nigeria/" target="_blank" class="block text-amber-500 hover:underline">PurpleDigitals – Boosting Small Business Visibility in Nigeria</a>
+        <a href="https://techpoint.africa/2025/02/15/digital-marketing-strategies-for-nigerian-smes/" target="_blank" class="block text-amber-500 hover:underline">Techpoint Africa – Digital Marketing Strategies for Nigerian SMEs</a>
+        <a href="https://www.smetoolkit.org/nigeria/en/content/en/1000/Marketing-Your-Small-Business" target="_blank" class="block text-amber-500 hover:underline">SME Toolkit Nigeria – Marketing Your Small Business</a>
+        <a href="https://businessday.ng/technology/article/enhancing-online-presence-for-nigerian-smes/" target="_blank" class="block text-amber-500 hover:underline">BusinessDay – Enhancing Online Presence for Nigerian SMEs</a>
+        <a href="https://techcabal.com/2025/03/10/digital-transformation-for-nigerian-smes/" target="_blank" class="block text-amber-500 hover:underline">TechCabal – Digital Transformation for Nigerian SMEs</a>
+      </div>
     </div>
 
-    <div class="group relative block bg-gray-800 p-6 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer">
+    <!-- Resource Card 2: Cyber Hygiene -->
+    <div class="block bg-gray-800 p-6 rounded-lg shadow transition cursor-pointer">
       <h4 class="text-lg font-semibold mb-2 text-amber-400">Cyber Hygiene for SMEs</h4>
       <p class="text-gray-300 mb-3">Best practices for small businesses to stay secure.</p>
-      <span class="text-amber-500 hover:underline">Read →</span>
-      <div class="absolute left-0 mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 p-4 space-y-2" id="dropdown-2"></div>
+      <button class="toggle-btn text-amber-500 font-semibold mb-2">View Resources →</button>
+      <div class="resource-links hidden space-y-2">
+        <!-- Global -->
+        <a href="https://www.enisa.europa.eu/topics/csirt-cert-services/guidelines/sme-cyber-security-guidelines" target="_blank" class="block text-amber-500 hover:underline">ENISA – SME Cybersecurity Guidelines</a>
+        <a href="https://www.cisa.gov/resources-tools/small-business" target="_blank" class="block text-amber-500 hover:underline">CISA – Small Business Cyber Hygiene</a>
+        <a href="https://global.lockton.com/mt/en/news-insights/cybersecurity-best-practices-for-smes" target="_blank" class="block text-amber-500 hover:underline">Lockton – Cybersecurity Best Practices for SMEs</a>
+        <a href="https://compciti.com/cyber-hygiene-101-essential-practices-every-small-business-must-follow-in-2025/" target="_blank" class="block text-amber-500 hover:underline">CompCiti – Cyber Hygiene 101</a>
+        <a href="https://www.secpod.com/blog/cyber-hygiene-checklist-for-2025/" target="_blank" class="block text-amber-500 hover:underline">SeCpOD – Cyber Hygiene Checklist for 2025</a>
+        <!-- African/Nigerian -->
+        <a href="https://africa.businessinsider.com/local/markets/cybersecurity-awareness-for-growing-businesses-in-africa/347k2eq" target="_blank" class="block text-amber-500 hover:underline">Business Insider Africa – Cybersecurity Awareness for SMEs</a>
+        <a href="https://www.deimos.io/blog-posts/cybersecurity-trends-shaping-africa-in-2025" target="_blank" class="block text-amber-500 hover:underline">Deimos – Cybersecurity Trends in Africa 2025</a>
+        <a href="https://www.cybilportal.org/projects/cybersecurity-toolkits-for-smes-strengthening-the-cybercrime-defences-of-nigerian-small-businesses/" target="_blank" class="block text-amber-500 hover:underline">CybilPortal – Cybersecurity Toolkits for Nigerian SMEs</a>
+        <a href="https://techforce.co.uk/blog/2025/cyber-hygiene-for-smes-5-essential-habits-to-protect-your-business" target="_blank" class="block text-amber-500 hover:underline">TechForce – Cyber Hygiene for SMEs</a>
+        <a href="https://info.cybertecsecurity.com/cyber-resilience-a-best-practice-guide-for-smes" target="_blank" class="block text-amber-500 hover:underline">CyberTec Security – Cyber Resilience Guide</a>
+      </div>
     </div>
 
-    <div class="group relative block bg-gray-800 p-6 rounded-lg shadow hover:bg-gray-700 transition cursor-pointer">
+    <!-- Resource Card 3: Digital Privacy -->
+    <div class="block bg-gray-800 p-6 rounded-lg shadow transition cursor-pointer">
       <h4 id="privacy-title" class="text-lg font-semibold mb-2 text-amber-400">Digital Privacy Trends</h4>
       <p class="text-gray-300 mb-3">Emerging risks and how to safeguard your data.</p>
-      <span class="text-amber-500 hover:underline">Read →</span>
-      <div class="absolute left-0 mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 p-4 space-y-2" id="dropdown-3"></div>
+      <button class="toggle-btn text-amber-500 font-semibold mb-2">View Resources →</button>
+      <div class="resource-links hidden space-y-2">
+        <!-- Global -->
+        <a href="https://www.computer.org/csdl/magazine/it/2025/03/11029710/27t0ttS9HUc" target="_blank" class="block text-amber-500 hover:underline">IEEE – Digital Privacy Trends</a>
+        <a href="https://www.osano.com/articles/data-privacy-trends" target="_blank" class="block text-amber-500 hover:underline">Osano – Emerging Data Privacy Trends</a>
+        <a href="https://www.alation.com/blog/data-privacy-in-2025-trends/" target="_blank" class="block text-amber-500 hover:underline">Alation – Data Privacy in 2025</a>
+        <a href="https://usercentrics.com/guides/data-privacy/data-privacy-trends/" target="_blank" class="block text-amber-500 hover:underline">Usercentrics – Privacy Trends</a>
+        <a href="https://www.trustcloud.ai/privacy/data-privacy-in-2025-navigating-the-evolving-digital-frontier/" target="_blank" class="block text-amber-500 hover:underline">TrustCloud – Navigating Digital Privacy</a>
+        <!-- Recent/Regional -->
+        <a href="https://apnews.com/article/7a90787f54b407c888999969a014e700" target="_blank" class="block text-amber-500 hover:underline">Apple & EU Digital Markets Act</a>
+        <a href="https://www.theguardian.com/uk-news/2025/sep/26/keir-starmers-plan-for-digital-ids-risks-creating-an-enormous-hacking-target" target="_blank" class="block text-amber-500 hover:underline">UK's Proposed Digital ID System</a>
+        <a href="https://www.techradar.com/vpn/vpn-privacy-security/people-in-arizona-will-soon-need-to-prove-their-age-to-access-adult-sites-and-critics-warn-of-privacy-risks" target="_blank" class="block text-amber-500 hover:underline">Arizona's Age Verification Law</a>
+      </div>
     </div>
 
   </div>
 </section>
 
 <script>
+  // Update Digital Privacy card title with current year
   const year = new Date().getFullYear();
   document.getElementById('privacy-title').textContent = `Digital Privacy Trends ${year}`;
 
-  // JSON array of resources for each card
-  const resources = {
-    1: [
-      {title: "Visibility Best Practices – BizTech", link: "#"},
-      {title: "SME Visibility Report – Global Insights", link: "#"}
-    ],
-    2: [
-      {title: "Cyber Hygiene Checklist – CyberAware", link: "#"},
-      {title: "SME Security Guide – SecureIT", link: "#"}
-    ],
-    3: [
-      {title: "IEEE – Digital Privacy Trends", link: "https://www.computer.org/csdl/magazine/it/2025/03/11029710/27t0ttS9HUc"},
-      {title: "Osano – Emerging Data Privacy Trends", link: "https://www.osano.com/articles/data-privacy-trends"},
-      {title: "Alation – Data Privacy in 2025", link: "https://www.alation.com/blog/data-privacy-in-2025-trends/"},
-      {title: "Usercentrics – Privacy Trends", link: "https://usercentrics.com/guides/data-privacy/data-privacy-trends/"},
-      {title: "TrustCloud – Navigating Digital Privacy", link: "https://www.trustcloud.ai/privacy/data-privacy-in-2025-navigating-the-evolving-digital-frontier/"}
-    ]
-  };
-
-  // Function to populate dropdowns
-  for (let i = 1; i <= 3; i++) {
-    const dropdown = document.getElementById(`dropdown-${i}`);
-    resources[i].forEach(resource => {
-      const a = document.createElement('a');
-      a.href = resource.link;
-      a.target = "_blank";
-      a.textContent = resource.title;
-      a.className = "block text-amber-500 hover:underline";
-      dropdown.appendChild(a);
+  // Toggle resources visibility
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const links = btn.nextElementSibling;
+      links.classList.toggle('hidden');
+      btn.textContent = links.classList.contains('hidden') ? 'View Resources →' : 'Hide Resources ↑';
     });
-  }
+  });
 </script>
-
 
 <!-- Register / Join CTA -->
 <section id="register" class="bg-gray-900 py-20 px-6 md:px-16">
