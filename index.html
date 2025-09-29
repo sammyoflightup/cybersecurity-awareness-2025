@@ -335,57 +335,122 @@
 </script>
 
 
-
-
 <!-- Register / Join CTA -->
 <section id="register" class="bg-gray-900 py-20 px-6 md:px-16">
   <div class="max-w-4xl mx-auto text-center">
     <h2 class="text-4xl font-extrabold mb-6 text-amber-400">Join CyberAware Today</h2>
     <p class="text-gray-300 mb-12">Choose your role and take the first step to becoming cyber-aware.</p>
     <div class="grid md:grid-cols-3 gap-8">
-      <!-- Volunteer -->
-      <a href="https://chat.whatsapp.com/H6doktYgPPH0VIj0kSueJD?mode=ems_copy_t"
-         data-role="Volunteer"
-         class="join-btn bg-amber-500 text-black font-semibold px-6 py-4 rounded-lg shadow hover:bg-amber-400 transition select-none">
+      <button data-role="Volunteer" class="join-btn bg-amber-500 text-black font-semibold px-6 py-4 rounded-lg shadow hover:bg-amber-400 transition select-none">
         Volunteer
-      </a>
-
-      <!-- Sponsor / Partner -->
-      <a href="https://chat.whatsapp.com/EfeDUTvrh5j7wG6XfJ5FeA?mode=ems_copy_t"
-         data-role="Sponsor/Partner"
-         class="join-btn bg-amber-500 text-black font-semibold px-6 py-4 rounded-lg shadow hover:bg-amber-400 transition select-none">
+      </button>
+      <button data-role="Sponsor/Partner" class="join-btn bg-amber-500 text-black font-semibold px-6 py-4 rounded-lg shadow hover:bg-amber-400 transition select-none">
         Sponsor / Partner
-      </a>
-
-      <!-- Community -->
-      <a href="https://chat.whatsapp.com/DvLdWaUKiFF3x1mwnqbDOj?mode=ems_copy_t"
-         data-role="Community"
-         class="join-btn bg-amber-500 text-black font-semibold px-6 py-4 rounded-lg shadow hover:bg-amber-400 transition select-none">
+      </button>
+      <button data-role="Community" class="join-btn bg-amber-500 text-black font-semibold px-6 py-4 rounded-lg shadow hover:bg-amber-400 transition select-none">
         Community
-      </a>
+      </button>
     </div>
   </div>
 </section>
 
+<!-- Modal Form -->
+<div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-gray-900 rounded-lg p-8 w-full max-w-md relative">
+    <h3 class="text-2xl font-bold mb-4 text-amber-400">Join as <span id="modalRole"></span></h3>
+    <form id="joinForm" class="flex flex-col gap-4">
+      <input type="text" name="name" placeholder="Your Name" required class="p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <input type="email" name="email" placeholder="Your Email" required class="p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <input type="tel" name="phone" placeholder="Phone Number" required class="p-3 rounded bg-gray-800 text-white border border-gray-700">
+      
+      <!-- Simple Math CAPTCHA -->
+      <div class="flex gap-2 items-center">
+        <label for="captchaAnswer" class="text-gray-300">Solve: <span id="captchaQuestion"></span></label>
+        <input type="number" id="captchaAnswer" required class="p-2 rounded bg-gray-800 text-white border border-gray-700 flex-1">
+      </div>
+
+      <button type="submit" id="submitBtn" class="bg-amber-500 text-black font-semibold px-6 py-3 rounded shadow hover:bg-amber-400 transition">
+        Submit & Go to WhatsApp
+      </button>
+      <p id="feedback" class="text-green-400 text-center hidden">Thanks for submitting! Redirecting...</p>
+    </form>
+    <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-white">&times;</button>
+  </div>
+</div>
+
 <script>
-  const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL'; // Replace with your deployed Apps Script URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycby8vORWjM9lgs25927sx7S26fN9o3jRtRjMzZvsW4Rrc8uQu5sRQnh5Ro72zomADXl9Xg/exec';
+  const joinButtons = document.querySelectorAll('.join-btn');
+  const modal = document.getElementById('joinModal');
+  const modalRoleSpan = document.getElementById('modalRole');
+  const form = document.getElementById('joinForm');
+  const closeModalBtn = document.getElementById('closeModal');
+  const captchaQuestion = document.getElementById('captchaQuestion');
+  const captchaAnswerInput = document.getElementById('captchaAnswer');
+  const submitBtn = document.getElementById('submitBtn');
+  const feedback = document.getElementById('feedback');
 
-  document.querySelectorAll('.join-btn').forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.preventDefault(); // Stop immediate redirect
+  let selectedRole = '';
+  let captchaResult = 0;
 
-      const role = this.dataset.role;
-      const url = this.href;
+  const roleWhatsAppLinks = {
+    "Volunteer": "https://chat.whatsapp.com/H6doktYgPPH0VIj0kSueJD?mode=ems_copy_t",
+    "Sponsor/Partner": "https://wa.me/2349036321238",
+    "Community": "https://chat.whatsapp.com/DvLdWaUKiFF3x1mwnqbDOj?mode=ems_copy_t"
+  };
 
-      // Log to Google Sheet
-      fetch(`${scriptURL}?role=${encodeURIComponent(role)}`, { method: 'GET', mode: 'no-cors' })
-        .finally(() => {
-          // Redirect to WhatsApp after logging
-          window.location.href = url;
-        });
+  function generateCaptcha() {
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    captchaResult = a + b;
+    captchaQuestion.textContent = `${a} + ${b} = ?`;
+    captchaAnswerInput.value = '';
+  }
+
+  // Open modal
+  joinButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedRole = btn.dataset.role;
+      modalRoleSpan.textContent = selectedRole;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      generateCaptcha();
+    });
+  });
+
+  // Close modal
+  closeModalBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    feedback.classList.add('hidden');
+  });
+
+  // Submit form
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    
+    if (parseInt(captchaAnswerInput.value) !== captchaResult) {
+      alert('Incorrect answer to the math question. Please try again.');
+      generateCaptcha();
+      return;
+    }
+
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const phone = form.phone.value.trim();
+
+    submitBtn.disabled = true; // prevent multiple clicks
+    feedback.classList.remove('hidden');
+
+    fetch(`${scriptURL}?role=${encodeURIComponent(selectedRole)}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`, {
+      method: 'GET',
+      mode: 'no-cors'
+    }).finally(() => {
+      window.location.href = roleWhatsAppLinks[selectedRole] || roleWhatsAppLinks["Community"];
     });
   });
 </script>
+
 
 
 <!-- Footer -->
