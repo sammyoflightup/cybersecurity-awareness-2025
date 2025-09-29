@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Phishing & Social Engineering",
+    "status": "Completed",
+    "description": "Learn to identify, avoid, and respond to phishing attacks.",
+    "date": "July 12, 2025",
+    "time": "12 PM (WAT)",
+    "platform": "Zoom (expired)",
+    "img": "img/cyberaware_events.jpg",
+    "flyer": "img/lightup_defencepost.jpg",
+    "youtube": "YOUR-YOUTUBE-LINK",
+    "linkedin": "YOUR-LINKEDIN-LINK",
+    "closed": true
+  },
+  {
+    "id": 2,
+    "title": "Identity Security & MFA",
+    "status": "",
+    "description": "Secure your digital identity with MFA and strong authentication.",
+    "date": "August 16, 2025",
+    "time": "12 PM (WAT)",
+    "platform": "Zoom (link after registration)",
+    "img": "img/session2.jpg",
+    "flyer": "img/flyer2.jpg",
+    "youtube": "YOUR-YOUTUBE-LINK",
+    "linkedin": "YOUR-LINKEDIN-LINK",
+    "closed": false
+  },
+  {
+    "id": 3,
+    "title": "Ransomware & Incident Response",
+    "status": "",
+    "description": "Understand ransomware threats and how to respond effectively.",
+    "date": "September 20, 2025",
+    "time": "12 PM (WAT)",
+    "platform": "Zoom (link after registration)",
+    "img": "img/session3.jpg",
+    "flyer": "img/flyer3.jpg",
+    "youtube": "YOUR-YOUTUBE-LINK",
+    "linkedin": "YOUR-LINKEDIN-LINK",
+    "closed": false
+  }
+]

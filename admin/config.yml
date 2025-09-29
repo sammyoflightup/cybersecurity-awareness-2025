@@ -1,0 +1,26 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "img"
+public_folder: "/img"
+
+collections:
+  - name: "sessions"
+    label: "Sessions"
+    folder: "."
+    create: true
+    slug: "{{id}}"
+    fields:
+      - {label: "ID", name: "id", widget: "number"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Status", name: "status", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Date", name: "date", widget: "string"}
+      - {label: "Time", name: "time", widget: "string"}
+      - {label: "Platform", name: "platform", widget: "string"}
+      - {label: "Image", name: "img", widget: "image"}
+      - {label: "Flyer", name: "flyer", widget: "image"}
+      - {label: "YouTube Link", name: "youtube", widget: "string"}
+      - {label: "LinkedIn Link", name: "linkedin", widget: "string"}
+      - {label: "Closed", name: "closed", widget: "boolean"}

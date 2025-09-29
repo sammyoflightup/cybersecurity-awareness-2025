@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e2e6fef0.js" crossorigin="anonymous"></script>
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeInUp {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="bg-gray-800 fixed w-full top-0 z-50 shadow">
+  <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 md:px-16">
+    <a href="index.html" class="text-amber-500 text-2xl font-bold tracking-wide">Registration Form</a>
+    <nav class="hidden md:block">
+      <ul class="flex space-x-6 text-gray-300 text-lg">
+        <li><a href="index.html" class="hover:text-amber-500 transition">Home</a></li>
+      </ul>
+    </nav>
+    <button id="menu-btn" class="md:hidden text-gray-300 hover:text-amber-500">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+  <nav id="mobile-menu" class="hidden md:hidden bg-gray-800 text-gray-300">
+    <ul class="flex flex-col space-y-2 px-6 py-4 text-lg">
+      <li><a href="index.html" class="block hover:text-amber-500 transition">Home</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Main Form Section -->
+<main class="flex-grow pt-24 pb-16 px-4 sm:px-6 lg:px-8 animate-fadeInUp">
+  <div class="max-w-xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-center text-amber-400 mb-6">Registration Form</h2>
+
+    <form id="registrationForm" class="space-y-4">
+      <input type="text" name="name" placeholder="Full Name" required
+             class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-amber-400" />
+
+      <input type="email" name="email" placeholder="Email" required
+             class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-amber-400" />
+
+      <input type="tel" name="phone" placeholder="Phone Number"
+             class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-amber-400" />
+
+      <textarea name="message" placeholder="Additional Message (Optional)" rows="4"
+                class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-amber-400"></textarea>
+
+      <!-- Math CAPTCHA -->
+      <div class="mt-4">
+        <label for="captchaAnswer" class="block mb-2 text-amber-400 font-semibold">
+          Security Check: <span id="captchaQuestion" class="inline-block ml-2"></span>
+        </label>
+        <input type="text" id="captchaAnswer" name="captchaAnswer" required
+               class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-amber-400" />
+        <div id="captchaError" class="text-red-400 mt-2 hidden">❌ Please answer the question correctly.</div>
+      </div>
+
+      <!-- Time spam check timestamp -->
+      <input type="hidden" name="formTimestamp" id="formTimestamp" />
+
+      <input type="hidden" name="confirmationID" id="confirmationID" />
+
+      <button type="submit"
+              class="w-full py-3 bg-amber-400 text-black font-semibold rounded hover:bg-amber-500 transition">
+        Submit
+      </button>
+
+      <div id="successMessage" class="text-green-400 text-center font-medium hidden">✅ Submitted successfully!</div>
+      <div id="errorMessage" class="text-red-400 text-center font-medium hidden">❌ Something went wrong.</div>
+    </form>
+  </div>
+</main>
+
+
+<!-- Script -->
+<script>
+// Math CAPTCHA pool
+const captchaPool = [
+  { question: "3 + 4 = ?", answer: "7" },
+  { question: "5 - 2 = ?", answer: "3" },
+  { question: "6 + 1 = ?", answer: "7" },
+  { question: "8 - 3 = ?", answer: "5" },
+  { question: "2 + 6 = ?", answer: "8" }
+];
+
+// Select a random captcha question on page load
+const captchaQuestionEl = document.getElementById("captchaQuestion");
+const captchaErrorEl = document.getElementById("captchaError");
+let currentCaptchaAnswer = "";
+
+function setRandomCaptcha() {
+  const randomIndex = Math.floor(Math.random() * captchaPool.length);
+  captchaQuestionEl.textContent = captchaPool[randomIndex].question;
+  currentCaptchaAnswer = captchaPool[randomIndex].answer;
+}
+
+// Set timestamp on page load for spam check
+window.addEventListener('DOMContentLoaded', () => {
+  setRandomCaptcha();
+  document.getElementById('formTimestamp').value = Date.now();
+});
+
+document.getElementById("registrationForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  // Clear previous error
+  captchaErrorEl.style.display = "none";
+
+  // Check math captcha answer
+  const userAnswer = document.getElementById("captchaAnswer").value.trim();
+  if (userAnswer !== currentCaptchaAnswer) {
+    captchaErrorEl.style.display = "block";
+    return; // Stop submission if CAPTCHA is wrong
+  }
+
+  // Time-based spam check
+  const formTimestamp = Number(document.getElementById('formTimestamp').value);
+  const now = Date.now();
+  const timeTaken = now - formTimestamp; // milliseconds
+  if (timeTaken < 5000) {  // less than 5 seconds
+    alert("Please take your time to fill the form properly.");
+    return;
+  }
+
+  // Generate confirmation ID
+  const confirmationID = "CONFIRM-" + now;
+  document.getElementById("confirmationID").value = confirmationID;
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  fetch("https://script.google.com/macros/s/AKfycbyyW4B8T2BkK_Ce3I4GPLDfVZogRvGf-wBiWd4320_DMKaf_979NUwKi7jgNeiX0Ot_/exec", {
+    method: "POST",
+    body: formData
+  })
+  .then(response => response.text())
+  .then(data => {
+    if (data.includes("Success")) {
+      form.reset();
+      setRandomCaptcha(); // New captcha for next submission
+      document.getElementById("successMessage").style.display = "block";
+      document.getElementById("errorMessage").style.display = "none";
+
+      // Reset timestamp for next submission
+      document.getElementById('formTimestamp').value = Date.now();
+    } else {
+      throw new Error();
+    }
+  })
+  .catch(err => {
+    document.getElementById("successMessage").style.display = "none";
+    document.getElementById("errorMessage").style.display = "block";
+  });
+});
+</script>
+
+</body>
+</html>
+<footer class="bg-gray-900 text-white py-6 px-4 text-sm text-center">
+  <p>© 2025 CyberAware. All rights reserved.</p>
+    </a>
+  </div>
+</footer>

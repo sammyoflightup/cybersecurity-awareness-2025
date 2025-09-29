@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cybersecurity Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fadeInUp {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-sans flex flex-col min-h-screen">
+
+<!-- Header -->
+<header class="bg-gray-800 fixed w-full top-0 z-50 shadow">
+  <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 md:px-16">
+    <a href="cyberaware.html" class="text-amber-500 text-2xl font-bold tracking-wide">CyberAware</a>
+    <nav class="hidden md:block">
+      <ul class="flex space-x-6 text-gray-300 text-lg">
+        <li><a href="index.html" class="text-amber-500 font-semibold">Home</a></li>
+      </ul>
+    </nav>
+    <button id="menu-btn" class="md:hidden text-gray-300 hover:text-amber-500">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+  <nav id="mobile-menu" class="hidden md:hidden bg-gray-800 text-gray-300">
+    <ul class="flex flex-col space-y-2 px-6 py-4 text-lg">
+      <li><a href="cyberaware.html" class="text-amber-500 font-semibold">Home</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow pt-24 px-6 md:px-16">
+  <section class="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg animate-fadeInUp">
+    <h2 class="text-4xl font-bold mb-8 text-amber-400 text-center">Cybersecurity Awareness Quiz</h2>
+    <form id="quizForm" class="space-y-8">
+
+      <!-- Questions -->
+      <div class="space-y-8">
+        <!-- Use a loop-like format for each question -->
+        <script>
+          const questions = [
+            {
+              q: "1. What does 'phishing' refer to in cybersecurity?",
+              a: ["A type of social engineering attack", "A firewall rule", "An antivirus software"],
+              c: "a"
+            },
+            {
+              q: "2. Which password is most secure?",
+              a: ["MyDog123", "letmein", "tY$7@3xLp!9"],
+              c: "c"
+            },
+            {
+              q: "3. What does 2FA stand for?",
+              a: ["Two-Factor Authentication", "Two-Firewall Access", "Trusted Filter Algorithm"],
+              c: "a"
+            },
+            {
+              q: "4. Which one is a strong sign of a phishing email?",
+              a: ["Perfect grammar", "Unexpected attachment", "Company logo"],
+              c: "b"
+            },
+            {
+              q: "5. What is the best way to protect against ransomware?",
+              a: ["Install themes", "Open all emails", "Regularly back up data"],
+              c: "c"
+            },
+            {
+              q: "6. What is a VPN used for?",
+              a: ["Speeding up internet", "Secure private connection", "Watching TV"],
+              c: "b"
+            },
+            {
+              q: "7. What does HTTPS mean?",
+              a: ["HyperText Transfer Protocol Secure", "High-Tech Transport Protocol Service", "Hack The System"],
+              c: "a"
+            },
+            {
+              q: "8. What should you do if your account is compromised?",
+              a: ["Ignore it", "Change password & enable 2FA", "Delete the account"],
+              c: "b"
+            },
+            {
+              q: "9. Which of these is a malware type?",
+              a: ["Firewall", "Worm", "Router"],
+              c: "b"
+            },
+            {
+              q: "10. What is the role of a firewall?",
+              a: ["Manage user passwords", "Filter network traffic", "Delete viruses"],
+              c: "b"
+            }
+          ];
+        </script>
+
+        <!-- Manually render questions (HTML can't loop JS inline directly) -->
+        <!-- Below is the rendered result of the 10 questions above -->
+        <!-- QUESTION TEMPLATE -->
+        <!-- Repeat this block and change values -->
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">1. What does "phishing" refer to in cybersecurity?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q1" value="a" class="mr-2"> A type of social engineering attack</label><br>
+            <label><input type="radio" name="q1" value="b" class="mr-2"> A firewall rule</label><br>
+            <label><input type="radio" name="q1" value="c" class="mr-2"> An antivirus software</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">2. Which password is most secure?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q2" value="a" class="mr-2"> MyDog123</label><br>
+            <label><input type="radio" name="q2" value="b" class="mr-2"> letmein</label><br>
+            <label><input type="radio" name="q2" value="c" class="mr-2"> tY$7@3xLp!9</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">3. What does 2FA stand for?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q3" value="a" class="mr-2"> Two-Factor Authentication</label><br>
+            <label><input type="radio" name="q3" value="b" class="mr-2"> Two-Firewall Access</label><br>
+            <label><input type="radio" name="q3" value="c" class="mr-2"> Trusted Filter Algorithm</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">4. Which one is a strong sign of a phishing email?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q4" value="a" class="mr-2"> Perfect grammar</label><br>
+            <label><input type="radio" name="q4" value="b" class="mr-2"> Unexpected attachment</label><br>
+            <label><input type="radio" name="q4" value="c" class="mr-2"> Company logo</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">5. What is the best way to protect against ransomware?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q5" value="a" class="mr-2"> Install themes</label><br>
+            <label><input type="radio" name="q5" value="b" class="mr-2"> Open all emails</label><br>
+            <label><input type="radio" name="q5" value="c" class="mr-2"> Regularly back up data</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">6. What is a VPN used for?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q6" value="a" class="mr-2"> Speeding up internet</label><br>
+            <label><input type="radio" name="q6" value="b" class="mr-2"> Secure private connection</label><br>
+            <label><input type="radio" name="q6" value="c" class="mr-2"> Watching TV</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">7. What does HTTPS mean?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q7" value="a" class="mr-2"> HyperText Transfer Protocol Secure</label><br>
+            <label><input type="radio" name="q7" value="b" class="mr-2"> High-Tech Transport Protocol Service</label><br>
+            <label><input type="radio" name="q7" value="c" class="mr-2"> Hack The System</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">8. What should you do if your account is compromised?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q8" value="a" class="mr-2"> Ignore it</label><br>
+            <label><input type="radio" name="q8" value="b" class="mr-2"> Change password & enable 2FA</label><br>
+            <label><input type="radio" name="q8" value="c" class="mr-2"> Delete the account</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">9. Which of these is a malware type?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q9" value="a" class="mr-2"> Firewall</label><br>
+            <label><input type="radio" name="q9" value="b" class="mr-2"> Worm</label><br>
+            <label><input type="radio" name="q9" value="c" class="mr-2"> Router</label>
+          </div>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-200 mb-4">10. What is the role of a firewall?</p>
+          <div class="space-y-2">
+            <label><input type="radio" name="q10" value="a" class="mr-2"> Manage user passwords</label><br>
+            <label><input type="radio" name="q10" value="b" class="mr-2"> Filter network traffic</label><br>
+            <label><input type="radio" name="q10" value="c" class="mr-2"> Delete viruses</label>
+          </div>
+        </div>
+      </div>
+
+        <button type="submit"
+                class="w-full bg-amber-600 text-black font-semibold py-3 rounded hover:bg-amber-500 transition">
+          Submit Quiz
+        </button>
+      </form>
+
+      <div id="quizResult" class="mt-8 text-center text-green-400 font-bold hidden"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-6 px-4 text-sm text-center mt-12">
+    <p>© 2025 CyberAware. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    document.getElementById('menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const correctAnswers = {
+        q1: 'a', q2: 'c', q3: 'a', q4: 'b', q5: 'c',
+        q6: 'b', q7: 'a', q8: 'b', q9: 'b', q10: 'b'
+      };
+
+      let score = 0;
+
+      for (let key in correctAnswers) {
+        const selected = document.querySelector(`input[name="${key}"]:checked`);
+        if (selected && selected.value === correctAnswers[key]) {
+          score++;
+        }
+      }
+
+      const result = document.getElementById('quizResult');
+      result.textContent = `You scored ${score} out of 10`;
+      result.classList.remove('hidden');
+    });
+  </script>
+
+</body>
+</html>
